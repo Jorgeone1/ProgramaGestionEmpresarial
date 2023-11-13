@@ -34,36 +34,35 @@ Entry(pantallaAlta).grid(row=5,column=0,padx=(30,0))
 Entry(pantallaAlta).grid(row=5,column=3,columnspan=4,sticky="ew",padx=(0,20))
 Entry(pantallaAlta).grid(row=5,column=7,columnspan=3,sticky="ew")
 #Septima FILA
-Label(pantallaAlta,text="GENERO").grid(row=6,column=0,padx=(30,0),pady=10)
-Label(pantallaAlta,text="DEPARTAMENTO").grid(row=6,column=3,columnspan=4,padx=(0,20))
-Label(pantallaAlta,text="PUESTO").grid(row=6,column=7,columnspan=3)
-
-#octava Fila
-Entry(pantallaAlta).grid(row=7,column=0,padx=(30,0))
-Entry(pantallaAlta).grid(row=7,column=3,sticky="ew",columnspan=4,padx=(0,20))
-Entry(pantallaAlta).grid(row=7,column=7,sticky="ew",columnspan=3)
-
+Label(pantallaAlta,text="SALARIO BRUTO").grid(row=6,column=0,columnspan=2,padx=(30,0),pady=20)
+Entry(pantallaAlta).grid(row=6,column=3)
+Label(pantallaAlta,text="NUMERO PAGAS").grid(row=6,column=4)
+Entry(pantallaAlta).grid(row=6,column=5)
 #novena fila
-Label(pantallaAlta,text="TELÉFONO").grid(row=8,column=0,padx=(10,0),pady=20,columnspan=2)
+Label(pantallaAlta,text="SALARIO MES").grid(row=8,column=0,padx=(10,0),pady=20,columnspan=2)
 
 Entry(pantallaAlta).grid(row=8,column=2,columnspan=2,sticky="ew")
-Label(pantallaAlta,text="SALARIO MENSUAL").grid(row=8,column=4,padx=(20,0))
+Label(pantallaAlta,text="%IRPF").grid(row=8,column=4,padx=(20,0))
 Label(pantallaAlta,text="  ").grid(row=8,column=5)
 Entry(pantallaAlta).grid(row=8,column=6,sticky="ew")
-Label(pantallaAlta,text="IRPF").grid(row=8,column=7,padx=(20,0))
+Label(pantallaAlta,text="RETENCION IRPF").grid(row=8,column=7,padx=(20,0))
 Label(pantallaAlta,text="     ").grid(row=8,column=8)
 Entry(pantallaAlta).grid(row=8,column=9,sticky="ew")
 #decima fila
-Label(pantallaAlta,text="EMAIL").grid(row=9,column=0,padx=(10,0),columnspan=2)
+Label(pantallaAlta,text="PRORRATA PAGAS").grid(row=9,column=0,padx=(10,0),columnspan=2)
 Entry(pantallaAlta).grid(row=9,column=2,columnspan=2,sticky="ew")
-Label(pantallaAlta,text="PAGAS EXTRAS").grid(row=9,column=4,padx=(20,0))
+Label(pantallaAlta,text="SEG.SOCIAL").grid(row=9,column=4,padx=(20,0))
 Entry(pantallaAlta).grid(row=9,column=6,sticky="ew")
-Label(pantallaAlta,text="SEG.SOCIAL").grid(row=9,column=7,padx=(20,0))
+Label(pantallaAlta,text="DEDUCCION SS").grid(row=9,column=7,padx=(20,0))
 Entry(pantallaAlta).grid(row=9,column=9,sticky="ew")
 
 #undecima fila
-Text(pantallaAlta,height=5).grid(row=10,column=0,columnspan=7,sticky="ew",padx=(30,0),pady=15)
-Button(pantallaAlta,text="CONFIRMAR").grid(row=10,column=7,columnspan=3,sticky="ew")
+Text(pantallaAlta,height=3).grid(row=10,column=0,columnspan=7,sticky="ew",padx=(30,0),pady=15)
+Label(pantallaAlta,text="CONFIRMAR").grid(row=10,column=7,sticky="ew")
+Entry(pantallaAlta).grid(row=10,column=8,columnspan=2,sticky="ew")
 
+Button(pantallaAlta,text="CARGAR EMPLEADO").grid(row=11,column=0,columnspan=7)
+Button(pantallaAlta,text="CALCULAR").grid(row=11,column=7)
+Button(pantallaAlta,text="IMPRIMIR").grid(row=11,column=9)
 
 pantallaAlta.mainloop()
