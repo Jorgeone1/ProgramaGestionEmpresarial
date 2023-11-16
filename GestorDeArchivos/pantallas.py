@@ -5,7 +5,7 @@ import re
 def confirmar():
     contador = 0
     
-    if(re.search("[A-Za-z]*",nombreAlta.get())):
+    if(re.search("^[A-Za-z]+$",nombreAlta.get().replace(" ","")) and not len(nombreAlta.get().strip())==0):
         print("nombre correcto")
         contador +=1
     else:
@@ -15,9 +15,10 @@ def confirmar():
         contador +=1    
     
     def comprobarMes(fecha):
-        dia = fecha[8:]
-        mes= fecha[5:7]
-        anyo=fecha[0:4]
+        dia = int(fecha[8:])
+        mes= int(fecha[5:7])
+        anyo=int(fecha[0:4])
+        
         
 
 pantallaAlta = Tk()
