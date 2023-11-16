@@ -1,20 +1,5 @@
 from tkinter import *
 from tkinter import font as tkFont
-from PIL import Image, ImageDraw, ImageTk
-
-def create_rounded_button_image(width, height, corner_radius, background_color, text_color, text):
-    # Crear una imagen PIL con fondo transparente
-    img = Image.new("RGBA", (width, height), (0, 0, 0, 0))
-    draw = ImageDraw.Draw(img)
-
-    # Dibujar un botón redondeado en la imagen
-    draw.ellipse((0, 0, width, height), fill=background_color)
-    draw.text((width // 2, height // 2), text, fill=text_color, anchor="mm")
-
-    # Convertir la imagen PIL en una imagen de PhotoImage de tkinter
-    rounded_button_image = ImageTk.PhotoImage(img)
-
-    return rounded_button_image
 
 pantallaAlta = Tk()
 
@@ -77,11 +62,11 @@ Text(pantallaAlta,height=3).grid(row=10,column=0,columnspan=7,sticky="ew",padx=(
 Label(pantallaAlta,text="CONFIRMAR",font=("Microsoft Sans Serif", 8, "bold")).grid(row=10,column=7,sticky="ew")
 Entry(pantallaAlta).grid(row=10,column=8,columnspan=2,sticky="ew")
 
-rounded_button_image = create_rounded_button_image(100, 40, 5, "yellow", "black", "Click Me")
+
 font = ("Helvetica", 10, "bold")
 Button(pantallaAlta,text="CARGAR EMPLEADO",font=("Microsoft Sans Serif", 8, "bold"),relief="ridge",borderwidth=3).grid(row=11,column=0,columnspan=7)
 Button(pantallaAlta,text="CALCULAR",font=("Microsoft Sans Serif", 8, "bold"),width=20,height=3,relief="ridge").grid(row=11,column=7)
-Button(pantallaAlta,image=rounded_button_image,font=font).grid(row=11,column=9)
+Button(pantallaAlta,font=("Microsoft Sans Serif", 8, "bold")).grid(row=11,column=9)
 
 
 pantallaAlta.mainloop()
