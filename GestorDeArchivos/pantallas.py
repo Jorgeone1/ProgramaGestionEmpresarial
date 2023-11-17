@@ -1,24 +1,221 @@
 from tkinter import *
-from tkinter import font as tkFont
+from tkinter import ttk
+from datetime import *
 import sqlite3 as sql
 import re
+import math
 def confirmar():
+    validacionAlta.delete("1.0","end")#borra todos los elementos de validacion para volver a empezar
     contador = 0
     
-    if(re.search("^[A-Za-z]+$",nombreAlta.get().replace(" ","")) and not len(nombreAlta.get().strip())==0):
+    if(re.match(r"^[A-Za-z]+$",nombreAlta.get().replace(" ","")) and not len(nombreAlta.get().strip())==0):
         print("nombre correcto")
         contador +=1
     else:
-        print("Error Nombre")
-    if(re.search("[0-9]{4}-[0-9]{2}-[0-9]{2}",fechanacimientoAlta.get()) and comprobarMes(fechanacimientoAlta.get())):
-        print("la fecha nacimiento esta bien")
-        contador +=1    
+        validacionAlta.insert("end","Error Nombre y Apellidos\n")
     
-    def comprobarMes(fecha):
-        dia = int(fecha[8:])
-        mes= int(fecha[5:7])
-        anyo=int(fecha[0:4])
+    if(comprobarfecha(fechanacimientoAlta.get(),"Fecha Nacimiento")):
+        contador+= 1
+    
+    if(comprobarfecha(fechaAlta.get(),"Fecha Alta")):
+        contador+=1
+    
+    if(re.match(r"^[A-Za-z0-9]+$",direccionAlta.get())):
+        contador+=1
+    else:
+         validacionAlta.insert("end","En direccion no puede estar vacio o contener caracteres especiales\n")
+    
+    if(comprobarDni(nifAlta.get())):
+        contador+=1
+    if(comprobarNifIban(bancoAlta.get())):
+        contador+=1
+
+    if(comprobarNaf(ssAlta.get())):
+        contador+=1
+
+    if(combo.get()!="-"):
+        contador+=1
+    else:
+        validacionAlta.insert("end","Error tiene que seleccionar un genero\n")
+
+    if(re.match(r"^[A-Za-z]+$",departamentoAlta.get())):
+        contador+=1
+    else:
+         validacionAlta.insert("end","En departamento no puede estar vacio o contener caracteres especiales o números\n")
+  
+    if(re.match(r"^[A-Za-z]+$",puestoAlta.get())):
+        contador+=1
+    else:
+         validacionAlta.insert("end","En Puesto no puede estar vacio o contener caracteres especiales o números\n")    
+    
+    if(re.match(r"^\d{9,10}$",str(telefonoAlta.get()))):
+        contador+=1
+    else:
+        validacionAlta.insert("end","En telefono no puede contener caracteres y tiene que ser 9 números\n")
+    
+    if(re.match(r"^[A-Za-z0-9]+@[A-Za-z]+\.[A-Za-z]{2,4}",emailalta.get())):
+        contador+=1
+    else:
+        validacionAlta.insert("end","El correo tiene un formato incorrecto\n")
+    try:
+        salario = SaliroAlta.get()
+        contador += 1
+    except TclError:
+        validacionAlta.insert("end","Error en sueldo no puede contener caracteres.\n") 
+    if(comprobarSS(seguridadAlta.get())):
+        print("Ss correcto")
+        contador +=1
+    
+    
+    print(contador)
+#92-91-90-8443-1
+def comprobarSS(ss):
+    valor = [1,2,1,2,1,2,1,2,1,2]
+    if(re.match(r"^[1-9][0-9]{10}$",str(ss))):
+        primerosnum= ss[:10]
+        ultnum=ss[-1]
+        suma=0
+        for i in range(0,len(primerosnum)):
+            suma += int(primerosnum[i]) * valor[i]
+        digito = (math.ceil(suma/10)*10)-suma
+        print((math.ceil(suma/10)*10),suma)
+        if(digito==ultnum):
+            return True
+        else:
+            validacionAlta.insert("end","Error el ultimo numero de ss es incorrecto")
+    else:
+        validacionAlta.insert("end","Error en ss")
+
+def comprobarDni(dni):
+    letras= "TRWAGMYFPDXBNJZSQVHLCKE" #lista en orden de los codigos
+    letnum={"X":"0","Y":"1","Z":"2"} #diccionario para sustituirlas letras en el dni
+    if(len(dni)==9):
+        if(re.search(r"[0-9]{8}[A-Za-z]{1}",dni)):#Comprueba si el codigo que inserto el 
+            numeros = int(dni[:8])-int((int(dni[:8])/23))*23
+            if(dni[-1].upper()==letras[numeros]):#comprueba que la letra sea la misma que el del usuario
+                print("El DNI es correcto")
+                return True
+            else:
+                validacionAlta.insert("end","El DNI es incorrecto en su ultima letra\n")
+                return False
+        elif(re.search(r"^[x|X|Y|y|Z|z]{1}[0-9]{7}[A-Za-z]{1}$",dni)):#Comprueba si es un NIE
+            numeros=int(letnum[dni[0].upper()]+dni[1:8])-(int(int(letnum[dni[0].upper()]+dni[1:8])/23)*23)
+            if(letras[numeros]==dni[-1].upper()): #comprueba que el indice de numeros en el string de letras coincida con el dni del usuario
+                print("El NIE es correcto")
+                return True
+            else:
+                validacionAlta.insert("end","Error el NIE es incorrecto en la ultima letra\n")
+                return False
+        else:
+            validacionAlta.insert("end","Error en el formato del DNI o NIE\n")
+    else:
+        validacionAlta.insert("end","Error El DNI o NIF tiene que tener una longitud de 9\n")
+    
+
+#Y9408905X
+#comprobacion del naf
+def comprobarNaf(naf):
+    if(len(naf)==12):
+        if(naf.isdigit()):
+            if(int(naf[2:10])<10000000):#comprueba si los numeros del medio supera los 
+                numeros=((int(naf[:1])+int(naf[2:10]))*10000000)%97
+                return correctoNaf(numeros,naf[10:12])
+            else:
+                numeros=int((int(naf[:10]))%97)#sino realizara otro tipo de operación
+                return correctoNaf(numeros,naf[10:12])
+                    
+        else:
+            validacionAlta.insert("end","Error del formato del codigo NAF\n")
+    else:
+        validacionAlta.insert("end","Error de longitud del codigo NAF\n")
+
+#comprueba que los digitos coincidan con el calculado
+def correctoNaf(naf,c):
+    if(str(naf)==c):
+        print("codigo NAF correcto")  
+        return True
+    else:
+        validacionAlta.insert("end","Codigo NAF equivocado en la validacion\n")
+        return False
+
+#comprueba si el codigo introducido es un iban o un ccc
+def comprobarNifIban(iban):
+    #Elimina los espacios posibles que hayan puesto en el ccc o iban
+    iban = iban.replace(" ","")
+    if(re.search("[E|e]{1}[S|s]{1}[0-9]{22}",iban)):#comprueba si es un iban
+        if(comprobarIBAN(iban[4:24])):#comprueba que el ccc del interior del iban es correcto
+            if(CreadorIBAN(iban[4:24])==iban.upper()):#comprueba que si las operaciones hechas son correctas y se parecen al iban
+                print("El IBAN es correcto")
+                return True
+            else:
+                validacionAlta.insert("end","El IBAN es incorrecto\n")
+                return False
+        else:
+            validacionAlta.insert("end","Error el CCC del IBAN es incorrecto\n")
+            return False
+    else:
+        validacionAlta.insert("end","Error en el formato del IBAN\n")
+        return False
+
+#Comprobación y operaciones del ccc
+def comprobarIBAN(iban):
+    entidad=iban[0:8] #Guarda los datos de la oficina y codigo de entidad
+    codigocuenta=iban[10:20] #Guarda el numero de cuenta
+    num1=[4,8,5,10,9,7,3,6] #Guarda las operaciones para el primer digito en orden
+    num2=[1,2,4,8,5,10,9,7,3,6] #Guarda las operaciones del segundo digito en orden
+    if(len(iban)==20):
+        digito1=primerDigito(entidad,num1) #Realiza las operaciones del digito 1
+        digito2=segundoDigito(codigocuenta,num2) #Realiza las operaciones del digito 2
+        total= f"{digito1}{digito2}" #los junta
+        return total==iban[8:10]   #devuelve un booleano si coinciden o no
+    else:
+        validacionAlta.insert("end","Error en el formato de IBAN/CCC\n")
+
+#operaciones del primer digito
+def primerDigito(entidad,num1):
+    numeros=0
+    for po in range(0,8): #for que realiza las operaciones
+        numeros= numeros + (int(entidad[po])*num1[po])
+    resto=numeros%11
+    
+    if(resto==1):
+        return 1
+    else:
+        return int(11- resto)
+    
+#Operaciones con el segundo digito
+def segundoDigito(codigocuenta,num2):
+    numeros2=0
+    for pi in range(0,len(num2)): # for que realiza las operaciones
+        numeros2= numeros2 + (int(codigocuenta[pi])*num2[pi])
+    resto2=11-(numeros2%11)
+    if(resto2==10):
+        return 1
+    else:
+        return resto2
+#ES8520854882515194350922
+#Crea y devuelve un IBAN pero realizando las operaciones
+def CreadorIBAN(cuenta):
+    total=cuenta+"142800" 
+    numerosiban=98-(int(total)%97) #realiza la operación para calcular los numeros de despues del ES
+    if(len(str(numerosiban))==1):
+        numerosiban="0" + str(numerosiban) #Crea un iban pero con los numeros creados por las operaciones 
+    iban="ES"+str(numerosiban)+cuenta
+    print(iban)
+    return iban
+def comprobarfecha(fecha,tipo):
         
+        if(re.match(r"^\d{4}-\d{1,2}-\d{1,2}$", fecha)):
+            try:
+                 datetime.strptime(fecha,"%Y-%m-%d")
+                 return True
+            except ValueError:
+                validacionAlta.insert("end",f"Error del año, mes o dia en {tipo}\n")
+                return False
+        else:
+             validacionAlta.insert("end",f"Error en el formato de fecha en {tipo} debe ser aaaa-mm-dd\n")
+                 
+
         
 
 pantallaAlta = Tk()
@@ -26,12 +223,11 @@ conexion = sql.connect("empleado.db")
 cursor = conexion.cursor()
 cursor.execute("select id from empleados order by id desc limit 1")
 codigo = cursor.fetchall()
-print(codigo)
+
 
 
 
 pantallaAlta.geometry("1000x500")
-customFont = tkFont.Font(family="Helvetica", size=9,weight="bold")
 
 codigos = IntVar()
 nombreAlta = StringVar()
@@ -41,7 +237,6 @@ direccionAlta = StringVar()
 nifAlta = StringVar()
 bancoAlta = StringVar()
 ssAlta = StringVar()
-generoAlta = StringVar()
 departamentoAlta = StringVar()
 puestoAlta = StringVar()
 telefonoAlta = IntVar()
@@ -49,7 +244,7 @@ SaliroAlta = DoubleVar()
 irpfAlta = DoubleVar()
 emailalta = StringVar()
 extraAlta = DoubleVar()
-seguridadAlta = IntVar()
+seguridadAlta = StringVar()
 
 #Primera fila
 Label(pantallaAlta,text="CÓDIGO",font=("Microsoft Sans Serif", 8, "bold")).grid(row=0,column=0,padx=(5,0))
@@ -85,7 +280,11 @@ Label(pantallaAlta,text="DEPARTAMENTO",font=("Microsoft Sans Serif", 8, "bold"))
 Label(pantallaAlta,text="PUESTO",font=("Microsoft Sans Serif", 8, "bold")).grid(row=6,column=7,columnspan=3)
 
 #octava Fila
-Entry(pantallaAlta,textvariable=generoAlta).grid(row=7,column=0,padx=(30,0))
+
+combo = ttk.Combobox(pantallaAlta)
+combo.grid(row=7,column=0,padx=(30,0))
+combo["values"] = ("-","Hombre","Mujer","Otro")
+combo.current(0)
 Entry(pantallaAlta,textvariable=departamentoAlta).grid(row=7,column=3,sticky="ew",columnspan=4,padx=(0,20))
 Entry(pantallaAlta,textvariable=puestoAlta).grid(row=7,column=7,sticky="ew",columnspan=3)
 
