@@ -1,9 +1,9 @@
 from tkinter import *
 
 pantallaInforme = Tk()
-pantallaInforme.geometry("650x300")
+pantallaInforme.geometry("550x300")
 
-Label(pantallaInforme,text="Empleado\nAltas", font=("Microsoft Sans Serif", 8, "bold")).grid(row=0,column=0,padx=(30,0),pady=(20,10))
+Label(pantallaInforme,text="EMPLEADO\nALTAS", font=("Microsoft Sans Serif", 8, "bold")).grid(row=0,column=0,padx=(30,0),pady=(20,10))
 Label(pantallaInforme,text="      ").grid(row=0,column=1)
 Label(pantallaInforme,text="EMPLEADO\nBAJAS", font=("Microsoft Sans Serif", 8, "bold")).grid(row=0,column=2,pady=(20,10))
 Label(pantallaInforme,text="                 ").grid(row=0,column=3)

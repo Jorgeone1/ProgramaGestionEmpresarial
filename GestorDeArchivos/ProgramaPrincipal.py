@@ -21,16 +21,12 @@ tabla = '''CREATE TABLE IF NOT EXISTS Empleados (
     salario float not null,
     pagasExtra float not null,
     irpf float not null,
-    seguridadsocial int(9) not null,
-    Altas boolean not null
+    seguridadsocial double not null,
+    Altas boolean not null,
+    fechaBaja DATE 
 );'''
 cursor.execute(tabla)
 
-conexion.commit()
-datos = ("Jorge","2002-12-5","2009-05-02","Parla villaverde alto 12 4 izq","12345678E","ES213123123412123456789",121234567812,"Hombre","informatica","secretario",659839212,"paco@gmaicl.com",120.20,20.50,10,123456789,True)
-print(len(datos))
-insertarDatos="Insert into empleados(nombre,fechanacimiento,fechaalta,direccion,nif,datosbancarios,naf,genero,departamento,puesto,telefono,email,salario,pagasExtra,irpf,seguridadsocial,altas) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
-cursor.execute(insertarDatos,datos)
 conexion.commit()
 consulta = "Select * from empleados"
 cursor.execute(consulta)

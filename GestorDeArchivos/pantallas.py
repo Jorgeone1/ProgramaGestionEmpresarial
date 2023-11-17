@@ -6,85 +6,106 @@ import re
 import math
 def confirmar():
     validacionAlta.delete("1.0","end")#borra todos los elementos de validacion para volver a empezar
-    contador = 0
-    
+    contador = []
+    insertarDatos="Insert into empleados(nombre,fechanacimiento,fechaalta,direccion,nif,datosbancarios,naf,genero,departamento,puesto,telefono,email,salario,pagasExtra,irpf,seguridadsocial,altas) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
     if(re.match(r"^[A-Za-z]+$",nombreAlta.get().replace(" ","")) and not len(nombreAlta.get().strip())==0):
         print("nombre correcto")
-        contador +=1
+        contador.append(nombreAlta.get())
     else:
         validacionAlta.insert("end","Error Nombre y Apellidos\n")
     
     if(comprobarfecha(fechanacimientoAlta.get(),"Fecha Nacimiento")):
-        contador+= 1
+        contador.append(fechanacimientoAlta.get())
     
     if(comprobarfecha(fechaAlta.get(),"Fecha Alta")):
-        contador+=1
+        contador.append(fechaAlta.get())
     
-    if(re.match(r"^[A-Za-z0-9]+$",direccionAlta.get())):
-        contador+=1
+    if(re.match(r"^[A-Za-z0-9]+$",direccionAlta.get().replace(" ",""))):
+        contador.append(direccionAlta.get())
     else:
          validacionAlta.insert("end","En direccion no puede estar vacio o contener caracteres especiales\n")
     
     if(comprobarDni(nifAlta.get())):
-        contador+=1
+        contador.append(nifAlta.get())
+        
     if(comprobarNifIban(bancoAlta.get())):
-        contador+=1
+        contador.append(bancoAlta.get())
 
     if(comprobarNaf(ssAlta.get())):
-        contador+=1
+        contador.append(ssAlta.get())
 
     if(combo.get()!="-"):
-        contador+=1
+        contador.append(combo.get())
     else:
         validacionAlta.insert("end","Error tiene que seleccionar un genero\n")
 
-    if(re.match(r"^[A-Za-z]+$",departamentoAlta.get())):
-        contador+=1
+    if(re.match(r"^[A-Za-z]+$",departamentoAlta.get().replace(" ",""))):
+        contador.append(departamentoAlta.get())
     else:
          validacionAlta.insert("end","En departamento no puede estar vacio o contener caracteres especiales o números\n")
   
-    if(re.match(r"^[A-Za-z]+$",puestoAlta.get())):
-        contador+=1
+    if(re.match(r"^[A-Za-z]+$",puestoAlta.get().replace(" ",""))):
+        contador.append(puestoAlta.get())
     else:
          validacionAlta.insert("end","En Puesto no puede estar vacio o contener caracteres especiales o números\n")    
-    
-    if(re.match(r"^\d{9,10}$",str(telefonoAlta.get()))):
-        contador+=1
-    else:
+    try:
+        if(re.match(r"^\d{9,10}$",str(telefonoAlta.get()))):
+            contador.append(telefonoAlta.get())
+        else:
+            validacionAlta.insert("end","En telefono tiene que ser 9 números\n")
+    except TclError:
         validacionAlta.insert("end","En telefono no puede contener caracteres y tiene que ser 9 números\n")
-    
-    if(re.match(r"^[A-Za-z0-9]+@[A-Za-z]+\.[A-Za-z]{2,4}",emailalta.get())):
-        contador+=1
+    if(re.match(r"^[A-Za-z0-9/_.]+@[A-Za-z]+\.[A-Za-z]{2,4}",emailalta.get())):
+        contador.append(emailalta.get())
     else:
         validacionAlta.insert("end","El correo tiene un formato incorrecto\n")
     try:
         salario = SaliroAlta.get()
-        contador += 1
+        if(salario>0):
+            contador.append(salario)
+        else:
+            validacionAlta.insert("end","Error no puede ser valor 0 el Salario\n")
     except TclError:
         validacionAlta.insert("end","Error en sueldo no puede contener caracteres.\n") 
-    if(comprobarSS(seguridadAlta.get())):
-        print("Ss correcto")
-        contador +=1
+        
+   
     
+    try:
+        extra = extraAlta.get()
+        contador.append(extra)
+    except TclError:
+        validacionAlta.insert("end","Error en Pago Extra no puede contener caracteres.\n") 
     
-    print(contador)
-#92-91-90-8443-1
-def comprobarSS(ss):
-    valor = [1,2,1,2,1,2,1,2,1,2]
-    if(re.match(r"^[1-9][0-9]{10}$",str(ss))):
-        primerosnum= ss[:10]
-        ultnum=ss[-1]
-        suma=0
-        for i in range(0,len(primerosnum)):
-            suma += int(primerosnum[i]) * valor[i]
-        digito = (math.ceil(suma/10)*10)-suma
-        print((math.ceil(suma/10)*10),suma)
-        if(digito==ultnum):
-            return True
+    try:
+        irp = irpfAlta.get()
+        if(irp>0):
+            contador.append(irp)
         else:
-            validacionAlta.insert("end","Error el ultimo numero de ss es incorrecto")
-    else:
-        validacionAlta.insert("end","Error en ss")
+            validacionAlta.insert("end","Error no puede ser valor 0 el irpf\n")
+    except TclError:
+        validacionAlta.insert("end","Error en IRPF no puede contener caracteres.\n") 
+        
+    try:
+        segurida = seguridadAlta.get()
+        if(segurida>0):
+            contador.append(segurida)
+        else:
+            validacionAlta.insert("end","Error no puede ser valor 0 el Seguridad Social\n")
+    except TclError:
+        validacionAlta.insert("end","Error en Seguridad Social no puede contener caracteres.\n") 
+        
+    if(len(contador)==16):
+        contador.append(True)
+        print(insertarDatos)
+        print(contador)
+        conexion = sql.connect("empleado.db")
+        cursor = conexion.cursor()
+        cursor.execute(insertarDatos,contador)
+        conexion.commit()
+        conexion.close()
+        
+        
+
 
 def comprobarDni(dni):
     letras= "TRWAGMYFPDXBNJZSQVHLCKE" #lista en orden de los codigos
@@ -224,10 +245,12 @@ cursor = conexion.cursor()
 cursor.execute("select id from empleados order by id desc limit 1")
 codigo = cursor.fetchall()
 
+    
 
 
 
 pantallaAlta.geometry("1000x500")
+pantallaAlta.title("Alta Empleado")
 
 codigos = IntVar()
 nombreAlta = StringVar()
@@ -241,20 +264,26 @@ departamentoAlta = StringVar()
 puestoAlta = StringVar()
 telefonoAlta = IntVar()
 SaliroAlta = DoubleVar()
-irpfAlta = DoubleVar()
+irpfAlta = IntVar()
 emailalta = StringVar()
 extraAlta = DoubleVar()
-seguridadAlta = StringVar()
+seguridadAlta = DoubleVar()
+print(len(codigo))
 
+    
 #Primera fila
 Label(pantallaAlta,text="CÓDIGO",font=("Microsoft Sans Serif", 8, "bold")).grid(row=0,column=0,padx=(5,0))
 Label(pantallaAlta,text="APELLIDOS Y NOMBRES",font=("Microsoft Sans Serif", 8, "bold")).grid(row=0,column=2,columnspan=8)
 
 #Segunda Fila
 
-Entry(pantallaAlta,width=15,textvariable=codigos).grid(row=1,column=0,padx=(5,0))
+Entry(pantallaAlta,width=15,textvariable=codigos,state="disabled").grid(row=1,column=0,padx=(5,0))
 Entry(pantallaAlta,textvariable=nombreAlta).grid(row=1,column=2,columnspan=8,sticky="ew")
-codigos.set(codigo)
+
+if(len(codigo)==0):
+    codigos.set(1)
+else:
+    codigos.set(codigo)
 #Tercera Fila
 Label(pantallaAlta,text="FECHA NACIMIENTO",font=("Microsoft Sans Serif", 8, "bold")).grid(row=2,column=0,columnspan=2,padx=(15,0),pady=10)
 Label(pantallaAlta,text="FECHA ALTA",font=("Microsoft Sans Serif", 8, "bold")).grid(row=2,column=3,padx=(0,30))
@@ -283,7 +312,7 @@ Label(pantallaAlta,text="PUESTO",font=("Microsoft Sans Serif", 8, "bold")).grid(
 
 combo = ttk.Combobox(pantallaAlta)
 combo.grid(row=7,column=0,padx=(30,0))
-combo["values"] = ("-","Hombre","Mujer","Otro")
+combo["values"] = ("-","Hombre","Mujer","Terrenaitor","H&M","ZARA")
 combo.current(0)
 Entry(pantallaAlta,textvariable=departamentoAlta).grid(row=7,column=3,sticky="ew",columnspan=4,padx=(0,20))
 Entry(pantallaAlta,textvariable=puestoAlta).grid(row=7,column=7,sticky="ew",columnspan=3)
