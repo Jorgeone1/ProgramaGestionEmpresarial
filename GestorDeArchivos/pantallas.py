@@ -4,6 +4,7 @@ from datetime import *
 import sqlite3 as sql
 import re
 import math
+from tkinter import messagebox
 def confirmar():
     validacionAlta.delete("1.0","end")#borra todos los elementos de validacion para volver a empezar
     contador = []
@@ -35,7 +36,10 @@ def confirmar():
         contador.append(ssAlta.get())
 
     if(combo.get()!="-"):
-        contador.append(combo.get())
+        if(combo.get== "Hombre" or combo.get()== "Mujer" or combo.get()=="Otros"):
+            contador.append(combo.get())
+        else:
+            validacionAlta.insert("end","Error tiene que seleccionar un genero de las opciones\n")
     else:
         validacionAlta.insert("end","Error tiene que seleccionar un genero\n")
 
@@ -95,18 +99,45 @@ def confirmar():
         validacionAlta.insert("end","Error en Seguridad Social no puede contener caracteres.\n") 
         
     if(len(contador)==16):
-        contador.append(True)
-        print(insertarDatos)
-        print(contador)
-        conexion = sql.connect("empleado.db")
-        cursor = conexion.cursor()
-        cursor.execute(insertarDatos,contador)
-        conexion.commit()
-        conexion.close()
+        respuesta = messagebox.askyesno("Confirmar","¿desea confirmar?")
+        if(respuesta):
+            contador.append(True)
+            print(insertarDatos)
+            print(contador)
+            conexion = sql.connect("empleado.db")
+            cursor = conexion.cursor()
+            cursor.execute(insertarDatos,contador)
+            conexion.commit()
+            validacionAlta.delete("1.0","end")
+            validacionAlta.insert("end","Se ha añadido correctamente")
+            limpiar()
+            conexion.close()
         
         
-
-
+def limpiar():
+    conexion = sql.connect("empleado.db")
+    cursor = conexion.cursor()
+    cursor.execute("select id from empleados order by id desc limit 1")
+    codigo = cursor.fetchall()
+    codinuevo = codigo[0][0]
+    codinuevo +=1
+    codigos.set(codinuevo)
+    nombreAlta.set("")
+    nombreAlta.set("")
+    fechanacimientoAlta.set("")
+    fechaAlta.set("")
+    direccionAlta.set("")
+    nifAlta.set("")
+    bancoAlta.set("")
+    ssAlta.set("")
+    departamentoAlta.set("")
+    puestoAlta.set("")
+    telefonoAlta.set("")
+    SaliroAlta.set("")
+    irpfAlta.set("")
+    emailalta.set("")
+    extraAlta.set("")
+    seguridadAlta.set("")
 def comprobarDni(dni):
     letras= "TRWAGMYFPDXBNJZSQVHLCKE" #lista en orden de los codigos
     letnum={"X":"0","Y":"1","Z":"2"} #diccionario para sustituirlas letras en el dni
@@ -283,7 +314,9 @@ Entry(pantallaAlta,textvariable=nombreAlta).grid(row=1,column=2,columnspan=8,sti
 if(len(codigo)==0):
     codigos.set(1)
 else:
-    codigos.set(codigo)
+    codi = (codigo[0][0])
+    codi+=1 
+    codigos.set(codi)
 #Tercera Fila
 Label(pantallaAlta,text="FECHA NACIMIENTO",font=("Microsoft Sans Serif", 8, "bold")).grid(row=2,column=0,columnspan=2,padx=(15,0),pady=10)
 Label(pantallaAlta,text="FECHA ALTA",font=("Microsoft Sans Serif", 8, "bold")).grid(row=2,column=3,padx=(0,30))
@@ -312,7 +345,7 @@ Label(pantallaAlta,text="PUESTO",font=("Microsoft Sans Serif", 8, "bold")).grid(
 
 combo = ttk.Combobox(pantallaAlta)
 combo.grid(row=7,column=0,padx=(30,0))
-combo["values"] = ("-","Hombre","Mujer","Terrenaitor","H&M","ZARA")
+combo["values"] = ("-","Hombre","Mujer","Otros")
 combo.current(0)
 Entry(pantallaAlta,textvariable=departamentoAlta).grid(row=7,column=3,sticky="ew",columnspan=4,padx=(0,20))
 Entry(pantallaAlta,textvariable=puestoAlta).grid(row=7,column=7,sticky="ew",columnspan=3)
