@@ -28,6 +28,7 @@ tabla = '''CREATE TABLE IF NOT EXISTS Empleados (
 cursor.execute(tabla)
 
 conexion.commit()
+
 consulta = "Select * from empleados"
 cursor.execute(consulta)
 
@@ -37,5 +38,13 @@ resultados = cursor.fetchall()
 # Imprimir los resultados
 for resultado in resultados:
     print(resultado)
+print("------------------------------")
+cursor.execute("Select * from empleados where Altas = True")
 
+# Obtener todos los resultados de la consulta
+resultados = cursor.fetchall()
+
+# Imprimir los resultados
+for resultado in resultados:
+    print(resultado)
 conexion.close()

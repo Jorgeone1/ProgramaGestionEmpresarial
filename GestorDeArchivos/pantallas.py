@@ -36,7 +36,7 @@ def confirmar():
         contador.append(ssAlta.get())
 
     if(combo.get()!="-"):
-        if(combo.get== "Hombre" or combo.get()== "Mujer" or combo.get()=="Otros"):
+        if(combo.get()== "Hombre" or combo.get()== "Mujer" ):
             contador.append(combo.get())
         else:
             validacionAlta.insert("end","Error tiene que seleccionar un genero de las opciones\n")
@@ -110,7 +110,7 @@ def confirmar():
             conexion.commit()
             validacionAlta.delete("1.0","end")
             validacionAlta.insert("end","Se ha añadido correctamente")
-            limpiar()
+           # limpiar()
             conexion.close()
         
         
@@ -345,7 +345,7 @@ Label(pantallaAlta,text="PUESTO",font=("Microsoft Sans Serif", 8, "bold")).grid(
 
 combo = ttk.Combobox(pantallaAlta)
 combo.grid(row=7,column=0,padx=(30,0))
-combo["values"] = ("-","Hombre","Mujer","Otros")
+combo["values"] = ("-","Hombre","Mujer")
 combo.current(0)
 Entry(pantallaAlta,textvariable=departamentoAlta).grid(row=7,column=3,sticky="ew",columnspan=4,padx=(0,20))
 Entry(pantallaAlta,textvariable=puestoAlta).grid(row=7,column=7,sticky="ew",columnspan=3)
