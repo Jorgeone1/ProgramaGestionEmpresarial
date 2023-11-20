@@ -39,7 +39,7 @@ resultados = cursor.fetchall()
 for resultado in resultados:
     print(resultado)
 print("------------------------------")
-cursor.execute("Select * from empleados where Altas = True")
+cursor.execute("Select * from empleados")
 
 # Obtener todos los resultados de la consulta
 resultados = cursor.fetchall()

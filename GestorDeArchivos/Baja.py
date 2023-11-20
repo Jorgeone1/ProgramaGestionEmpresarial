@@ -7,9 +7,14 @@ pantallaBaja = Tk()
 def confibaja():
     contar = []
     texto.delete("1.0","end")
+    cursorbaja.execute(f"Select fechaAlta from empleados where ID = {code}")
+    fechaAltita = cursorbaja.fetchall()
+    fechaAlto = datetime.strptime(fechaAltita[0][0],"%Y-%m-%d")
+    
     if(comprobarfecha(fechaBaja.get(),"Fecha Baja")):
         contar.append(fechaBaja.get())
-    
+        if(fechaAlto>datetime.strptime(fechaBaja.get(),"%Y-%m-%d")):
+            texto.insert("end",f"No se pudo actualizar el empleado con ID {contar[1]}.")
     try:
         code = codigoBaja.get()
         if(code>0):
@@ -33,6 +38,7 @@ def confibaja():
                 limpiezabaja()
             else:
                 texto.insert("end",f"No se pudo actualizar el empleado con ID {contar[1]}.")
+
 def limpiezabaja():
     codigoBaja.set("")
     fechaBaja.set("")

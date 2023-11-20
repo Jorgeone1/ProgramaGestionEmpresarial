@@ -110,7 +110,7 @@ def confirmar():
             conexion.commit()
             validacionAlta.delete("1.0","end")
             validacionAlta.insert("end","Se ha añadido correctamente")
-           # limpiar()
+            limpiar()
             conexion.close()
         
         
@@ -299,7 +299,6 @@ irpfAlta = IntVar()
 emailalta = StringVar()
 extraAlta = DoubleVar()
 seguridadAlta = DoubleVar()
-print(len(codigo))
 
     
 #Primera fila

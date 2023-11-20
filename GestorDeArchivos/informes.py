@@ -5,6 +5,7 @@ from datetime import *
 def calcularEdad(fecha):
     fecha_actual = datetime.now()
     edadTotal=0
+   
     for fechas in fecha:
         fecha_objeto = datetime.strptime(fechas[0], "%Y-%m-%d")
         edad=int(fecha_actual.year) - int(fecha_objeto.year)
