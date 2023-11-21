@@ -2,6 +2,53 @@ from tkinter import *
 from tkinter import font as tkFont
 import sqlite3 as sql
 import re
+from tkinter import messagebox
+from reportlab.pdfgen import canvas
+from reportlab.lib import colors
+def capture_to_pdf():
+    # Captura la ventana de Tkinter
+    
+
+    pantallaFotocopiar = Tk()
+    cursorInforme.execute(f"Select nombre, direccion, nif, naf,DatosBancarios,fechaalta,fechabaja,salario from empleados where id ={codigoNomina.get()}")
+    datosImprimir =cursorInforme.fetchall()
+    pantallaFotocopiar.geometry("800x400")
+    datosfotocopia = Text(pantallaFotocopiar,height=20,width=90)
+    datosfotocopia.grid(row=0,column=0,padx=35,pady=35)
+    print(datosImprimir)
+    c = canvas.Canvas(f"nombre.pdf")
+    c.drawString(100,750,datosImprimir[0][0])
+    c.drawString(100,730,datosImprimir[0][1])
+    c.setLineWidth(1)
+    c.setStrokeColor(colors.black)
+    c.line(50, 710, 550, 710)
+    c.drawString(100,670,f"NIF {datosImprimir[0][2]}")
+    c.drawString(150,670,f"NAF {datosImprimir[0][3]}")
+    c.drawString(150,670,f"CCC {datosImprimir[0][4]}")
+    c.save()
+    textoFotocopia = f'''
+    
+    {datosImprimir[0][1]}
+    ---------------------------------------------------------------------------------
+
+    NIF {datosImprimir[0][2]}        NAF {datosImprimir[0][3]}          CCC {datosImprimir[0][4]}
+    PERIODO: OCTUBRE     DIAS: 30    F. ALTA: {datosImprimir[0][5]}         F. BAJA:{datosImprimir[0][6]}
+    ---------------------------------------------------------------------------------
+
+    CONCEPTOS SALARIALES
+    SALARIO BASE                                                               {salarioMesNomina.get()}
+    DESCUENTOS
+    BASE IMPONIBLE     {salarioMesNomina.get()}           IRPF {irpfNomina.get()}%                    {retencionIRPFNomina.get()}
+    BCCC               {prorataNomina.get()}           SS {seguridadNomina.get()}%                    {deduccionSS.get()}
+    ---------------------------------------------------------------------------------
+
+    PRORRATA DE PAGAS: {round(prorataNomina.get()-salarioMesNomina.get(),2)}                           TOTAL A PERCIBIR {PercibirNomina.get()}
+    '''
+    datosfotocopia.insert("end",textoFotocopia)
+
+    
+   
+
 def cargarEmpleado():
     textoError.delete("1.0","end")
     if(re.match(r"^[-]?[0-9]+$",codigoNomina.get())):
@@ -29,7 +76,7 @@ def CalcularNomina():
     prorataNomina.set(round((float(salarioMesNomina.get())*float(numeroPaga.get()))/12,2))
     retencionIRPFNomina.set(round((salarioMesNomina.get()*irpfPorcentaje)/100,2))
     deduccionSS.set(round((prorataNomina.get()*seguridadsocialPorcentaje)/100,2))
-    PercibirNomina.set(salarioMesNomina.get()-retencionIRPFNomina.get()-deduccionSS.get())
+    PercibirNomina.set(round(salarioMesNomina.get()-retencionIRPFNomina.get()-deduccionSS.get(),2))
 conexionInforme= sql.connect("empleado.db")
 cursorInforme = conexionInforme.cursor()
 
@@ -117,7 +164,7 @@ Entry(pantallaNomina,textvariable=PercibirNomina).grid(row=10,column=8,columnspa
 
 Button(pantallaNomina,text="CARGAR EMPLEADO",font=("Microsoft Sans Serif", 8, "bold"),relief="ridge",borderwidth=3,command=cargarEmpleado).grid(row=11,column=0,columnspan=7)
 Button(pantallaNomina,text="CALCULAR",font=("Microsoft Sans Serif", 8, "bold"),width=20,height=3,relief="ridge",command=CalcularNomina).grid(row=11,column=7)
-Button(pantallaNomina,text="CONFIRMAR",font=("Microsoft Sans Serif", 8, "bold")).grid(row=11,column=9)
+Button(pantallaNomina,text="CONFIRMAR",font=("Microsoft Sans Serif", 8, "bold"),command=capture_to_pdf).grid(row=11,column=9)
 
 
 pantallaNomina.mainloop()

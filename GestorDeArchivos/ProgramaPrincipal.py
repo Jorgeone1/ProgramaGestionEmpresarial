@@ -1,4 +1,4 @@
-import tkinter as tk
+from tkinter import *
 import sqlite3 as sql
 
 conexion = sql.connect("empleado.db")

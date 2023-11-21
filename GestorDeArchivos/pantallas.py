@@ -52,6 +52,7 @@ def confirmar():
         contador.append(puestoAlta.get())
     else:
          validacionAlta.insert("end","En Puesto no puede estar vacio o contener caracteres especiales o números\n")    
+    
     try:
         if(re.match(r"^\d{9,10}$",str(telefonoAlta.get()))):
             contador.append(telefonoAlta.get())
@@ -59,10 +60,12 @@ def confirmar():
             validacionAlta.insert("end","En telefono tiene que ser 9 números\n")
     except TclError:
         validacionAlta.insert("end","En telefono no puede contener caracteres y tiene que ser 9 números\n")
+    
     if(re.match(r"^[A-Za-z0-9/_.]+@[A-Za-z]+\.[A-Za-z]{2,4}",emailalta.get())):
         contador.append(emailalta.get())
     else:
         validacionAlta.insert("end","El correo tiene un formato incorrecto\n")
+    
     try:
         salario = SaliroAlta.get()
         if(salario>0):
@@ -71,8 +74,6 @@ def confirmar():
             validacionAlta.insert("end","Error no puede ser valor 0 el Salario\n")
     except TclError:
         validacionAlta.insert("end","Error en sueldo no puede contener caracteres.\n") 
-        
-   
     
     try:
         extra = extraAlta.get()
@@ -82,19 +83,19 @@ def confirmar():
     
     try:
         irp = irpfAlta.get()
-        if(irp>0):
+        if(irp>0 and irp<=47):
             contador.append(irp)
         else:
-            validacionAlta.insert("end","Error no puede ser valor 0 el irpf\n")
+            validacionAlta.insert("end","Error no puede ser valor 0 el irpf o superior a 47\n")
     except TclError:
         validacionAlta.insert("end","Error en IRPF no puede contener caracteres.\n") 
         
     try:
         segurida = seguridadAlta.get()
-        if(segurida>0):
+        if(segurida>0 and segurida<=47):
             contador.append(segurida)
         else:
-            validacionAlta.insert("end","Error no puede ser valor 0 el Seguridad Social\n")
+            validacionAlta.insert("end","Error no puede ser valor 0 el Seguridad Social o superior a 47\n")
     except TclError:
         validacionAlta.insert("end","Error en Seguridad Social no puede contener caracteres.\n") 
         

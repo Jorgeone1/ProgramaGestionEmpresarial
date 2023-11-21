@@ -13,6 +13,7 @@ def calcularEdad(fecha):
             edad -=1
         edadTotal+=edad
     return edadTotal
+
 def sumaSalario(salario):
     totalSalario = 0
     for salarios in salario:
