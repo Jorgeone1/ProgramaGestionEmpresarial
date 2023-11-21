@@ -1,17 +1,35 @@
 from tkinter import *
 from tkinter import font as tkFont
 import sqlite3 as sql
-
+import re
 def cargarEmpleado():
     textoError.delete("1.0","end")
-    cursorInforme.execute(f"Select * from empleados where id ={codigoNomina.get()} ")
-    datos = cursorInforme.fetchall()
-    if cursorInforme.rowcount < 0:
-        textoError.insert("end",f"Empleado con ID {codigoNomina.get()} actualizado con éxito.")
-        print(datos)
+    if(re.match(r"^[-]?[0-9]+$",codigoNomina.get())):
+        cursorInforme.execute(f"Select nombre,fechanacimiento,fechaalta,direccion,nif,datosbancarios,naf,salario,irpf,seguridadsocial from empleados where id ={codigoNomina.get()} ")
+        datos = cursorInforme.fetchall()
+        if len(datos)!=0:
+            textoError.insert("end",f"Empleado con ID {codigoNomina.get()} cargado con éxito.")
+            listaVariables=[nombreNomina,fechanacimientoNomina,fechaNomina,direccionNomina,nifNomina,bancoNomina,ssNomina]
+            for i in range(0,len(listaVariables)):
+                listaVariables[i].set(datos[0][i])
+            irpfNomina.set(datos[0][8])
+            seguridadNomina.set(datos[0][9])
+            numeroPaga.set(14)
+            salarioTotal = int(datos[0][7])*12
+            SaliroNomina.set(str(salarioTotal))
+        else:
+            textoError.insert("end",f"No Existe el empleado con ID {codigoNomina.get()}.")
     else:
-        textoError.insert("end",f"No se pudo actualizar el empleado con ID {codigoNomina.get()}.")
-    
+        textoError.insert("end",f"No puede contener Caracteres.\n")
+def CalcularNomina():
+    salarioBruto = SaliroNomina.get()
+    irpfPorcentaje = irpfNomina.get()
+    seguridadsocialPorcentaje=seguridadNomina.get()
+    salarioMesNomina.set(round((float(salarioBruto)/12),2))
+    prorataNomina.set(round((float(salarioMesNomina.get())*float(numeroPaga.get()))/12,2))
+    retencionIRPFNomina.set(round((salarioMesNomina.get()*irpfPorcentaje)/100,2))
+    deduccionSS.set(round((prorataNomina.get()*seguridadsocialPorcentaje)/100,2))
+    PercibirNomina.set(salarioMesNomina.get()-retencionIRPFNomina.get()-deduccionSS.get())
 conexionInforme= sql.connect("empleado.db")
 cursorInforme = conexionInforme.cursor()
 
@@ -34,8 +52,8 @@ irpfNomina = IntVar()
 extraNomina = DoubleVar()
 numeroPaga = IntVar()
 seguridadNomina = DoubleVar()
-salarioMesNomina = IntVar()
-prorataNomina = IntVar()
+salarioMesNomina = DoubleVar()
+prorataNomina = DoubleVar()
 retencionIRPFNomina = DoubleVar()
 deduccionSS = DoubleVar()
 PercibirNomina = DoubleVar()
@@ -75,30 +93,30 @@ Entry(pantallaNomina,state="disabled",textvariable=numeroPaga).grid(row=6,column
 #novena fila
 Label(pantallaNomina,text="SALARIO MES",font=("Microsoft Sans Serif", 8, "bold")).grid(row=8,column=0,padx=(10,0),pady=20,columnspan=2)
 
-Entry(pantallaNomina).grid(row=8,column=2,columnspan=2,sticky="ew")
+Entry(pantallaNomina,textvariable=salarioMesNomina).grid(row=8,column=2,columnspan=2,sticky="ew")
 Label(pantallaNomina,text="%IRPF",font=("Microsoft Sans Serif", 8, "bold")).grid(row=8,column=4,padx=(20,0))
 Label(pantallaNomina,text="  ").grid(row=8,column=5)
 Entry(pantallaNomina,textvariable=irpfNomina,state="disabled").grid(row=8,column=6,sticky="ew")
 Label(pantallaNomina,text="RETENCION IRPF",font=("Microsoft Sans Serif", 8, "bold")).grid(row=8,column=7,padx=(20,0))
 Label(pantallaNomina,text="     ").grid(row=8,column=8)
-Entry(pantallaNomina).grid(row=8,column=9,sticky="ew")
+Entry(pantallaNomina,textvariable=retencionIRPFNomina).grid(row=8,column=9,sticky="ew")
 #decima fila
 Label(pantallaNomina,text="PRORRATA PAGAS",font=("Microsoft Sans Serif", 8, "bold")).grid(row=9,column=0,padx=(10,0),columnspan=2)
-Entry(pantallaNomina).grid(row=9,column=2,columnspan=2,sticky="ew")
+Entry(pantallaNomina,textvariable=prorataNomina).grid(row=9,column=2,columnspan=2,sticky="ew")
 Label(pantallaNomina,text="SEG.SOCIAL",font=("Microsoft Sans Serif", 8, "bold")).grid(row=9,column=4,padx=(20,0))
 Entry(pantallaNomina,textvariable=seguridadNomina,state="disabled").grid(row=9,column=6,sticky="ew")
 Label(pantallaNomina,text="DEDUCCION SS",font=("Microsoft Sans Serif", 8, "bold")).grid(row=9,column=7,padx=(20,0))
-Entry(pantallaNomina).grid(row=9,column=9,sticky="ew")
+Entry(pantallaNomina,textvariable=deduccionSS).grid(row=9,column=9,sticky="ew")
 
 #undecima fila
 textoError = Text(pantallaNomina,height=3)
 textoError.grid(row=10,column=0,columnspan=7,sticky="ew",padx=(30,0),pady=15)
 Label(pantallaNomina,text="A PERCIBIR",font=("Microsoft Sans Serif", 8, "bold")).grid(row=10,column=7,sticky="ew")
-Entry(pantallaNomina).grid(row=10,column=8,columnspan=2,sticky="ew")
+Entry(pantallaNomina,textvariable=PercibirNomina).grid(row=10,column=8,columnspan=2,sticky="ew")
 
 
 Button(pantallaNomina,text="CARGAR EMPLEADO",font=("Microsoft Sans Serif", 8, "bold"),relief="ridge",borderwidth=3,command=cargarEmpleado).grid(row=11,column=0,columnspan=7)
-Button(pantallaNomina,text="CALCULAR",font=("Microsoft Sans Serif", 8, "bold"),width=20,height=3,relief="ridge").grid(row=11,column=7)
+Button(pantallaNomina,text="CALCULAR",font=("Microsoft Sans Serif", 8, "bold"),width=20,height=3,relief="ridge",command=CalcularNomina).grid(row=11,column=7)
 Button(pantallaNomina,text="CONFIRMAR",font=("Microsoft Sans Serif", 8, "bold")).grid(row=11,column=9)
 
 
