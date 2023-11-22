@@ -2,29 +2,61 @@ from tkinter import *
 from tkinter import font as tkFont
 import sqlite3 as sql
 import re
-from tkinter import messagebox
 from reportlab.pdfgen import canvas
 from reportlab.lib import colors
+from datetime import *
+
 def capture_to_pdf():
     # Captura la ventana de Tkinter
-    
-
+    conexionInforme= sql.connect("empleado.db")
+    cursorInforme = conexionInforme.cursor()
+    fecha_actual = datetime.now()
     pantallaFotocopiar = Tk()
     cursorInforme.execute(f"Select nombre, direccion, nif, naf,DatosBancarios,fechaalta,fechabaja,salario from empleados where id ={codigoNomina.get()}")
     datosImprimir =cursorInforme.fetchall()
+    diasmese={1:"ENERO",2:"FEBRERO",3:"MARZO",4:"ABRIL",5:"MAYO",6:"JUNIO",7:"JULIO",8:"AGOSTO",9:"SEPTIEMBRE",10:"OCTUBRE",11:"NOVIEMBRE",12:"DICIEMBRE"}
+    mesescantidad={"ENERO":31,"FEBRERO":28,"MARZO":31,"ABRIL":30,"MAYO":31,"JUNIO":30,"JULIO":31,"AGOSTO":31,"SEPTIEMBRE":30,"OCTUBRE":30,"NOVIEMBRE":30,"DICIEMBRE":31}
     pantallaFotocopiar.geometry("800x400")
     datosfotocopia = Text(pantallaFotocopiar,height=20,width=90)
     datosfotocopia.grid(row=0,column=0,padx=35,pady=35)
     print(datosImprimir)
-    c = canvas.Canvas(f"nombre.pdf")
+    c = canvas.Canvas(f"queso.pdf")
+    c.setFont("Helvetica-Bold",11)
     c.drawString(100,750,datosImprimir[0][0])
     c.drawString(100,730,datosImprimir[0][1])
     c.setLineWidth(1)
     c.setStrokeColor(colors.black)
-    c.line(50, 710, 550, 710)
-    c.drawString(100,670,f"NIF {datosImprimir[0][2]}")
-    c.drawString(150,670,f"NAF {datosImprimir[0][3]}")
-    c.drawString(150,670,f"CCC {datosImprimir[0][4]}")
+    c.line(100, 710, 550, 710)
+    c.setFont("Helvetica",9)
+    c.setFont("Helvetica-Bold",9)
+    c.drawString(100,670,f"NIF:")
+    c.setFont("Helvetica",9)
+    c.drawString(120,670,f"{datosImprimir[0][2]}")
+    c.setFont("Helvetica-Bold",9)
+    c.drawString(300,670,f"NAF:")
+    c.setFont("Helvetica",9)
+    c.drawString(330,670,f"{datosImprimir[0][3]}")
+    c.setFont("Helvetica-Bold",9)
+    c.drawString(430,670,f"CCC:")
+    c.setFont("Helvetica",9)
+    c.drawString(460,670,f"{datosImprimir[0][4]}")
+    c.setFont("Helvetica-Bold",9)
+    c.drawString(100,640,f"PERIODO:")
+    c.setFont("Helvetica",11)
+    c.drawString(150,640,f"{diasmese[fecha_actual.month]}")
+    c.setFont("Helvetica-Bold",9)
+    c.drawString(230,640,f"DIAS:")
+    c.setFont("Helvetica",11)
+    c.drawString(260,640,f"{mesescantidad[diasmese[fecha_actual.month]]}")
+    c.setFont("Helvetica-Bold",9)
+    c.drawString(300,640,f"F.ALTA:")
+    c.setFont("Helvetica",11)
+    c.drawString(340,640,f"{datosImprimir[0][5]}")
+    c.setFont("Helvetica-Bold",9)
+    c.drawString(430,640,f"F.BAJA:")
+    c.setFont("Helvetica",9)
+    c.drawString(470,640,f"{datosImprimir[0][6]}")
+    
     c.save()
     textoFotocopia = f'''
     
@@ -45,11 +77,13 @@ def capture_to_pdf():
     PRORRATA DE PAGAS: {round(prorataNomina.get()-salarioMesNomina.get(),2)}                           TOTAL A PERCIBIR {PercibirNomina.get()}
     '''
     datosfotocopia.insert("end",textoFotocopia)
-
+    conexionInforme.close()
     
    
 
 def cargarEmpleado():
+    conexionInforme= sql.connect("empleado.db")
+    cursorInforme = conexionInforme.cursor()
     textoError.delete("1.0","end")
     if(re.match(r"^[-]?[0-9]+$",codigoNomina.get())):
         cursorInforme.execute(f"Select nombre,fechanacimiento,fechaalta,direccion,nif,datosbancarios,naf,salario,irpf,seguridadsocial from empleados where id ={codigoNomina.get()} ")
@@ -68,6 +102,7 @@ def cargarEmpleado():
             textoError.insert("end",f"No Existe el empleado con ID {codigoNomina.get()}.")
     else:
         textoError.insert("end",f"No puede contener Caracteres.\n")
+    conexionInforme.close()
 def CalcularNomina():
     salarioBruto = SaliroNomina.get()
     irpfPorcentaje = irpfNomina.get()
@@ -77,8 +112,7 @@ def CalcularNomina():
     retencionIRPFNomina.set(round((salarioMesNomina.get()*irpfPorcentaje)/100,2))
     deduccionSS.set(round((prorataNomina.get()*seguridadsocialPorcentaje)/100,2))
     PercibirNomina.set(round(salarioMesNomina.get()-retencionIRPFNomina.get()-deduccionSS.get(),2))
-conexionInforme= sql.connect("empleado.db")
-cursorInforme = conexionInforme.cursor()
+
 
 
 pantallaNomina = Tk()
