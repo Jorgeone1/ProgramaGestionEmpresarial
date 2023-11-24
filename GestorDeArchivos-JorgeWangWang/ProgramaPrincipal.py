@@ -144,7 +144,8 @@ def abrirAltas():
         if(fecha_objeto.month,fecha_objeto.day) >(fecha_actual.month,fecha_actual.day):
             edad -=1
         return edad
-        #limpia los entrys
+    
+    #limpia los entrys 
     def limpiar():
         #actualiza el codigo con uno nuevo
         conexion = sql.connect("empleado.db")
@@ -171,6 +172,7 @@ def abrirAltas():
         seguridadAlta.set("0.0")
         combo.set(0)
         combo2.set(0)
+    
     def comprobarDni(dni):
         letras= "TRWAGMYFPDXBNJZSQVHLCKE" #lista en orden de los codigos
         letnum={"X":"0","Y":"1","Z":"2"} #diccionario para sustituirlas letras en el dni
@@ -306,7 +308,7 @@ def abrirAltas():
     cursor.execute("select id from empleados order by id desc limit 1")
     codigo = cursor.fetchall()
     pantallaAlta.resizable(0,0)
-        
+    pantallaAlta.iconbitmap("mario.ico")
 
 
 
@@ -412,6 +414,7 @@ def abrirAltas():
 def abrirBajasVentana():
     pantallaBaja = Toplevel()
     pantallaBaja.resizable(0,0)
+    pantallaBaja.iconbitmap("mario.ico")
     def confibaja():
         contar = []#igual que en alta usamos el mismo metodo
         texto.delete("1.0","end")
@@ -505,6 +508,9 @@ def abrirInformeVentana():
     pantallaInforme.geometry("550x300")
     pantallaInforme.title("Informes")
     pantallaInforme.resizable(0,0)
+    pantallaInforme.iconbitmap("mario.ico")
+    
+    
     empleadoAltas = StringVar()
     mujeresAltas = StringVar()
     hombresAltas = StringVar()
@@ -899,6 +905,7 @@ pantallaMenu = Tk()
 pantallaMenu.geometry("800x600")
 pantallaMenu.title("Menu")
 pantallaMenu.resizable(0,0)
+pantallaMenu.iconbitmap("mario.ico")
 logo = PhotoImage(file="mario.png") #importa la imagen
 logo = logo.subsample(6) #hace la imagen mas pequeña en escala
 Label(pantallaMenu,text="Nominator+",font=("Helvetica",30,"bold")).grid(row=1,column=0,columnspan=2,padx=(60,0),pady=10)
